@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const {Command} = require('commander');
-const assert = require('assert');
+const fs = require("fs");
+const { Command } = require("commander");
+const assert = require("assert");
 const program = new Command();
 
 let cjs;
-let CJS_JSON = './dist/cjs/solana-suite.json';
-let ESM_JSON = './dist/esm/solana-suite.json';
+let CJS_JSON = "./dist/cjs/solana-suite.json";
+let ESM_JSON = "./dist/esm/solana-suite.json";
 
-if (process.env.NODE_ENV === 'standalone') {
-  CJS_JSON = './src/solana-suite.json';
-  ESM_JSON = './src/solana-suite.json';
+if (process.env.NODE_ENV === "standalone") {
+  CJS_JSON = "./src/solana-suite.json";
+  ESM_JSON = "./src/solana-suite.json";
 }
 
 const loadConfigFile = () => {
@@ -24,9 +24,9 @@ const loadConfigFile = () => {
     console.error(e.message);
     process.exit(0);
   }
-}
+};
 
-const successMessage = () =>  console.log('Update solana suite config.');
+const successMessage = () => console.log("Update solana suite config.");
 
 const updateConfigFile = (key, value) => {
   const parsed = JSON.parse(cjs);
@@ -34,16 +34,16 @@ const updateConfigFile = (key, value) => {
   fs.writeFileSync(CJS_JSON, JSON.stringify(parsed));
   fs.writeFileSync(ESM_JSON, JSON.stringify(parsed));
   successMessage();
-}
+};
 
-const updateClusterConfigFile = (key, value, customUrl = '') => {
+const updateClusterConfigFile = (key, value, customUrl = "") => {
   const parsed = JSON.parse(cjs);
   parsed[key].type = value;
   parsed[key].customUrl = customUrl;
   fs.writeFileSync(CJS_JSON, JSON.stringify(parsed));
   fs.writeFileSync(ESM_JSON, JSON.stringify(parsed));
   successMessage();
-}
+};
 
 const updateNftStorageConfigFile = (key, value) => {
   const parsed = JSON.parse(cjs);
@@ -51,70 +51,83 @@ const updateNftStorageConfigFile = (key, value) => {
   fs.writeFileSync(CJS_JSON, JSON.stringify(parsed));
   fs.writeFileSync(ESM_JSON, JSON.stringify(parsed));
   successMessage();
-}
+};
 
 loadConfigFile();
 
 program
-  .name('solana-suite-config')
-  .description('Setup solana-suite.json')
-  .version('0.2');
+  .name("solana-suite-config")
+  .description("Setup solana-suite.json")
+  .version("0.2");
 
-program.command('cluster')
-  .description('select want connect to cluster type')
-  .option('prd', 'Connect to mainnet-beta')
-  .option('prd2', 'Connect to mainnet-beta-serum')
-  .option('prdrr', 'Connect to mainnet-beta and mainnet-beta-serum alternately')
-  .option('dev', 'Connect to devnet')
-  .option('test', 'Connect to testnet')
-  .option('localhost', 'Connect to devnet in localhost')
-  .option('custom', 'Use custom url connect to devnet(mainnet-beta). e.g: custom `https://....`')
+program
+  .command("cluster")
+  .description("select want connect to cluster type")
+  .option("prd", "Connect to mainnet-beta")
+  .option("prd2", "Connect to mainnet-beta-serum")
+  .option("prdrr", "Connect to mainnet-beta and mainnet-beta-serum alternately")
+  .option("dev", "Connect to devnet")
+  .option("test", "Connect to testnet")
+  .option("localhost", "Connect to devnet in localhost")
+  .option(
+    "custom",
+    "Use custom url connect to devnet(mainnet-beta). e.g: custom `https://....`"
+  )
   .action((arg, option) => {
     let value;
+    let customUrl = "";
     switch (arg) {
-      case 'prd':
-        value = 'mainnet-beta';
+      case "prd":
+        value = "mainnet-beta";
         break;
-      case 'prd2':
-        value = 'mainnet-beta-serum';
+      case "prd2":
+        value = "mainnet-beta-serum";
         break;
-      case 'prdrr':
-        value = 'mainnet-beta-round-robin';
+      case "prdrr":
+        value = "mainnet-beta-round-robin";
         break;
-      case 'dev':
-        value = 'devnet';
+      case "dev":
+        value = "devnet";
         break;
-      case 'test':
-        value = 'testnet';
+      case "test":
+        value = "testnet";
         break;
-      case 'localhost':
-        value = 'localhost-devnet';
+      case "localhost":
+        value = "localhost-devnet";
         break;
-      case 'custom':
-        if (!option || !/https?:\/\/[-_.!~*\\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/g.test(option)) {
-          console.warn('Not found custom cluster url. e.g: custom `https://....`');
+      case "custom":
+        if (
+          !option ||
+          !/https?:\/\/[-_.!~*\\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/g.test(option)
+        ) {
+          console.warn(
+            "Not found custom cluster url. e.g: custom `https://....`"
+          );
           return;
         }
-        value = 'custom';
+        value = "custom";
         customUrl = option;
         break;
       default:
-        console.warn(`No match parameter: need parameter is\n"prd", "prd2", "prdrr", "dev", "test", "localhost", "custom". any one of them`);
+        console.warn(
+          `No match parameter: need parameter is\n"prd", "prd2", "prdrr", "dev", "test", "localhost", "custom". any one of them`
+        );
     }
-    updateClusterConfigFile('cluster', value, customUrl);
+    updateClusterConfigFile("cluster", value, customUrl);
   });
 
-program.command('debug')
-  .description('Enable/Disable debug mode')
-  .option('on', 'Enable debug mode')
-  .option('off', 'Disable debug mode. default setting')
-  .action(arg => {
+program
+  .command("debug")
+  .description("Enable/Disable debug mode")
+  .option("on", "Enable debug mode")
+  .option("off", "Disable debug mode. default setting")
+  .action((arg) => {
     let value;
     switch (arg) {
-      case 'on':
+      case "on":
         value = true;
         break;
-      case 'off':
+      case "off":
         value = false;
         break;
       default:
@@ -123,19 +136,18 @@ program.command('debug')
           "on", "off". any one of them
         `);
     }
-    updateConfigFile('debugging', value);
+    updateConfigFile("debugging", value);
   });
 
-program.command('nftstorage')
-  .description('Set apikey of nft storage')
-  .action(arg => {
+program
+  .command("nftstorage")
+  .description("Set apikey of nft storage")
+  .action((arg) => {
     if (arg.length < 230) {
-      console.warn('Not found api key');
+      console.warn("Not found api key");
       process.exit(0);
     }
-    updateNftStorageConfigFile('apikey', arg);
+    updateNftStorageConfigFile("apikey", arg);
   });
 
 program.parse(process.argv);
-
-
